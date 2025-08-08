@@ -1,8 +1,11 @@
 package mate.academy.dao;
 
+import java.util.Optional;
 import mate.academy.model.User;
 
 public interface UserDao {
-    User get(String email);
-    User create(String email, String password, String salt);
+
+    User add(User user);
+
+    Optional<User> findByEmail(String email);
 }
