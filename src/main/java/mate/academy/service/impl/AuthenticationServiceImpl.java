@@ -19,29 +19,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public User login(String email, String password) throws AuthenticationException {
         Optional<User> maybeUser = userService.findByEmail(email);
-        if (maybeUser.isEmpty()) {
-            throw new AuthenticationException("User not found");
-        }
         User user = maybeUser.get();
-        String expectedHash = user.getPassword();
-        String actualHash = HashUtil.hash(password, user.getSalt());
-        if (!expectedHash.equals(actualHash)) {
+
+        if (!isPasswordValid(password, user)) {
             throw new AuthenticationException("Invalid email or password");
         }
+
         return user;
     }
 
     @Override
     public User register(String email, String password) throws RegistrationException {
-        if (userService.findByEmail(email).isPresent()) {
-            throw new RegistrationException("Email in use: " + email);
-        }
-        String salt = HashUtil.generateSalt();
-        String hash = HashUtil.hash(password, salt);
-        User newUser = new User();
-        newUser.setEmail(email);
-        newUser.setSalt(salt);
-        newUser.setPassword(hash);
-        return userService.add(newUser);
+        return userService.add(email, password);
+    }
+
+    private boolean isPasswordValid(String password, User user) {
+        String expectedHash = user.getPassword();
+        String actualHash = HashUtil.hash(password, user.getSalt());
+        return expectedHash.equals(actualHash);
     }
 }
