@@ -19,6 +19,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public User login(String email, String password) throws AuthenticationException {
         Optional<User> maybeUser = userService.findByEmail(email);
+
+        if (maybeUser.isEmpty()) {
+            throw new AuthenticationException("Invalid email or password");
+        }
+
         User user = maybeUser.get();
 
         if (!isPasswordValid(password, user)) {
@@ -30,7 +35,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public User register(String email, String password) throws RegistrationException {
-        return userService.add(email, password);
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        return userService.add(user);
     }
 
     private boolean isPasswordValid(String password, User user) {

@@ -6,7 +6,7 @@ import mate.academy.model.User;
 
 public interface UserService {
 
-    User add(String email, String password) throws RegistrationException;
+    User add(User user) throws RegistrationException;
 
     Optional<User> findByEmail(String email);
 

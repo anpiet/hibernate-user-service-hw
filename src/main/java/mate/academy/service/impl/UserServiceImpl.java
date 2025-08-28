@@ -16,14 +16,14 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
 
     @Override
-    public User add(String email, String password) throws RegistrationException {
-        if (findByEmail(email).isPresent()) {
-            throw new RegistrationException("Email in use: " + email);
+    public User add(User user) throws RegistrationException {
+        if (findByEmail(user.getEmail()).isPresent()) {
+            throw new RegistrationException("Email in use: " + user.getEmail());
         }
         String salt = HashUtil.generateSalt();
-        String hash = HashUtil.hash(password, salt);
+        String hash = HashUtil.hash(user.getPassword(), salt);
         User newUser = new User();
-        newUser.setEmail(email);
+        newUser.setEmail(user.getEmail());
         newUser.setSalt(salt);
         newUser.setPassword(hash);
         return userDao.add(newUser);
